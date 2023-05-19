@@ -17,6 +17,7 @@ builder.Services.AddSwaggerGen();
 // Dependency injection
 builder.Services.AddScoped<IBookmarkService, BookmarkService>();
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IYoutubeService, YoutubeService>();
 builder.Services.AddSingleton<ICopyQueue, CopyQueue>();
 
 // DB connection
