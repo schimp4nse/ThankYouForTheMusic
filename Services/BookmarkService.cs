@@ -1,9 +1,7 @@
-
 using Database;
 using Interfaces;
 using Models.Responses;
 using Models.Entities;
-using YoutubeExplode;
 using Microsoft.EntityFrameworkCore;
 
 namespace Services;
@@ -13,49 +11,50 @@ namespace Services;
 public class BookmarkService : IBookmarkService
 {
 
-    private readonly DefaultDbContext _context;
+	private readonly DefaultDbContext _context;
 
-    public BookmarkService(DefaultDbContext context)
-    {
-        _context = context;
-    }
+	public BookmarkService(DefaultDbContext context)
+	{
+		_context = context;
+	}
 
 
-    public async Task AddBookmarkAsync(string url)
-    {
-        _context.Bookmarks.Add(new Bookmark { Url = url });
-        await _context.SaveChangesAsync();
-    }
+	/// <inheritdoc />
+	public async Task AddBookmarkAsync(string url)
+	{
+		var bookmark = await _context.Bookmarks.FirstOrDefaultAsync(bm => bm.Url.Equals(url));
+		if (bookmark is not null)
+			throw new Exception("Bookmark with this url already exists");
 
-    public async Task DeleteBookmarkAsync(long bookmarkId)
-    {
-        var bm = _context.Bookmarks
-        .FirstOrDefault(bm => bm.Id == bookmarkId)
-        ?? throw new Exception("Bookmark no found");
+		_context.Bookmarks.Add(new Bookmark { Url = url });
+		await _context.SaveChangesAsync();
+	}
 
-        _context.Bookmarks.Remove(bm);
-        await _context.SaveChangesAsync();
-    }
+	/// <inheritdoc />
+	public async Task DeleteBookmarkAsync(long bookmarkId)
+	{
+		var bookmark =
+			await _context.Bookmarks.FirstOrDefaultAsync(bm => bm.Id == bookmarkId)
+			?? throw new Exception("Bookmark not found");
 
-    public Task<object> DownloadAsync(string url)
-    {
-        throw new NotImplementedException();
-    }
+		var bm = _context.Bookmarks
+		.FirstOrDefault(bm => bm.Id == bookmarkId)
+		?? throw new Exception("Bookmark no found");
 
-    public async Task<List<BookmarkResponse>> GetBookmarkAsync(string bookmarkId)
-    {
-        var result = new List<BookmarkResponse>();
-        await _context.Bookmarks
-            .ForEachAsync(bm =>
-            {
-                result.Add(
-                new BookmarkResponse
-                {
-                    BookmarkId = bm.Id,
-                    Url = bm.Url
-                });
-            });
-            
-        return result;
-    }
+		_context.Bookmarks.Remove(bm);
+		await _context.SaveChangesAsync();
+	}
+
+	/// <inheritdoc />
+	public async Task<List<BookmarkResponse>> GetBookmarksAsync()
+	{
+		return await _context.Bookmarks
+				.Select(bm =>
+					new BookmarkResponse
+					{
+						BookmarkId = bm.Id,
+						Url = bm.Url
+					})
+				.ToListAsync();
+	}
 }

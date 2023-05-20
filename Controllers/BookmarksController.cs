@@ -29,10 +29,10 @@ public class BookmarkController : ControllerBase
         return Ok();
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetBookmarkList([FromRoute] string bookmarkId)
+    [HttpGet("all")]
+    public async Task<IActionResult> GetBookmarkList()
     {
-        var result = await _bookmarkService.GetBookmarkAsync(bookmarkId);
+        var result = await _bookmarkService.GetBookmarksAsync();
         return Ok(result);
     }
 }
