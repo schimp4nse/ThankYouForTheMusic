@@ -4,6 +4,7 @@ using Models.Requests;
 
 namespace Controllers;
 
+[ApiController, Route("file")]
 public class FileController : ControllerBase
 {
     private readonly IFileService _fileService;

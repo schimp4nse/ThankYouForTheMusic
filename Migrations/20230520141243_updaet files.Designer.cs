@@ -4,6 +4,7 @@ using Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(DefaultDbContext))]
-    partial class DefaultDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230520141243_updaet files")]
+    partial class updaetfiles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,7 +34,7 @@ namespace WebApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("PlaylistId")
+                    b.Property<long?>("Bookmarks_FK")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Url")
@@ -41,7 +44,7 @@ namespace WebApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PlaylistId");
+                    b.HasIndex("Bookmarks_FK");
 
                     b.ToTable("Bookmarks");
                 });
@@ -54,9 +57,6 @@ namespace WebApi.Migrations
                         .HasColumnOrder(1);
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("FileId"));
-
-                    b.Property<long?>("BookmarkId")
-                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2")
@@ -76,10 +76,16 @@ namespace WebApi.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnOrder(5);
 
+                    b.Property<long?>("Files_FK")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("MimeType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnOrder(4);
+
+                    b.Property<long>("Playlist_FK")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Url")
                         .IsRequired()
@@ -88,7 +94,9 @@ namespace WebApi.Migrations
 
                     b.HasKey("FileId");
 
-                    b.HasIndex("BookmarkId");
+                    b.HasIndex("Files_FK");
+
+                    b.HasIndex("Playlist_FK");
 
                     b.ToTable("Files");
                 });
@@ -120,14 +128,22 @@ namespace WebApi.Migrations
                 {
                     b.HasOne("Models.Entities.PlayList", null)
                         .WithMany("Bookmarks")
-                        .HasForeignKey("PlaylistId");
+                        .HasForeignKey("Bookmarks_FK");
                 });
 
             modelBuilder.Entity("Models.Entities.File", b =>
                 {
                     b.HasOne("Models.Entities.Bookmark", null)
                         .WithMany("Files")
-                        .HasForeignKey("BookmarkId");
+                        .HasForeignKey("Files_FK");
+
+                    b.HasOne("Models.Entities.PlayList", "PlayList")
+                        .WithMany()
+                        .HasForeignKey("Playlist_FK")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PlayList");
                 });
 
             modelBuilder.Entity("Models.Entities.Bookmark", b =>

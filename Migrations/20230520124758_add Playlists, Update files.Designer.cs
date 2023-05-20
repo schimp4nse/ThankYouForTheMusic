@@ -4,6 +4,7 @@ using Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(DefaultDbContext))]
-    partial class DefaultDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230520124758_add Playlists, Update files")]
+    partial class addPlaylistsUpdatefiles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,17 +34,12 @@ namespace WebApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("PlaylistId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnOrder(2);
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PlaylistId");
 
                     b.ToTable("Bookmarks");
                 });
@@ -55,16 +53,13 @@ namespace WebApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("FileId"));
 
-                    b.Property<long?>("BookmarkId")
-                        .HasColumnType("bigint");
-
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2")
                         .HasColumnOrder(7);
 
                     b.Property<TimeSpan?>("Duration")
                         .HasColumnType("time")
-                        .HasColumnOrder(3);
+                        .HasColumnOrder(6);
 
                     b.Property<string>("FileName")
                         .IsRequired()
@@ -74,21 +69,19 @@ namespace WebApi.Migrations
                     b.Property<string>("FilePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnOrder(5);
+                        .HasColumnOrder(4);
 
                     b.Property<string>("MimeType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnOrder(4);
+                        .HasColumnOrder(3);
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnOrder(6);
+                        .HasColumnOrder(5);
 
                     b.HasKey("FileId");
-
-                    b.HasIndex("BookmarkId");
 
                     b.ToTable("Files");
                 });
@@ -114,30 +107,6 @@ namespace WebApi.Migrations
                     b.HasKey("PlaylistId");
 
                     b.ToTable("Playlists");
-                });
-
-            modelBuilder.Entity("Models.Entities.Bookmark", b =>
-                {
-                    b.HasOne("Models.Entities.PlayList", null)
-                        .WithMany("Bookmarks")
-                        .HasForeignKey("PlaylistId");
-                });
-
-            modelBuilder.Entity("Models.Entities.File", b =>
-                {
-                    b.HasOne("Models.Entities.Bookmark", null)
-                        .WithMany("Files")
-                        .HasForeignKey("BookmarkId");
-                });
-
-            modelBuilder.Entity("Models.Entities.Bookmark", b =>
-                {
-                    b.Navigation("Files");
-                });
-
-            modelBuilder.Entity("Models.Entities.PlayList", b =>
-                {
-                    b.Navigation("Bookmarks");
                 });
 #pragma warning restore 612, 618
         }

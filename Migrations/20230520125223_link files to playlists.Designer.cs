@@ -4,6 +4,7 @@ using Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(DefaultDbContext))]
-    partial class DefaultDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230520125223_link files to playlists")]
+    partial class linkfilestoplaylists
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,17 +34,12 @@ namespace WebApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("PlaylistId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnOrder(2);
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PlaylistId");
 
                     b.ToTable("Bookmarks");
                 });
@@ -54,9 +52,6 @@ namespace WebApi.Migrations
                         .HasColumnOrder(1);
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("FileId"));
-
-                    b.Property<long?>("BookmarkId")
-                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2")
@@ -88,8 +83,6 @@ namespace WebApi.Migrations
 
                     b.HasKey("FileId");
 
-                    b.HasIndex("BookmarkId");
-
                     b.ToTable("Files");
                 });
 
@@ -111,33 +104,26 @@ namespace WebApi.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnOrder(2);
 
+                    b.Property<long?>("Playlist_FK")
+                        .HasColumnType("bigint");
+
                     b.HasKey("PlaylistId");
+
+                    b.HasIndex("Playlist_FK");
 
                     b.ToTable("Playlists");
                 });
 
-            modelBuilder.Entity("Models.Entities.Bookmark", b =>
+            modelBuilder.Entity("Models.Entities.PlayList", b =>
                 {
-                    b.HasOne("Models.Entities.PlayList", null)
-                        .WithMany("Bookmarks")
-                        .HasForeignKey("PlaylistId");
+                    b.HasOne("Models.Entities.File", null)
+                        .WithMany("PlayLists")
+                        .HasForeignKey("Playlist_FK");
                 });
 
             modelBuilder.Entity("Models.Entities.File", b =>
                 {
-                    b.HasOne("Models.Entities.Bookmark", null)
-                        .WithMany("Files")
-                        .HasForeignKey("BookmarkId");
-                });
-
-            modelBuilder.Entity("Models.Entities.Bookmark", b =>
-                {
-                    b.Navigation("Files");
-                });
-
-            modelBuilder.Entity("Models.Entities.PlayList", b =>
-                {
-                    b.Navigation("Bookmarks");
+                    b.Navigation("PlayLists");
                 });
 #pragma warning restore 612, 618
         }

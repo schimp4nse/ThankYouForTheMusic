@@ -1,10 +1,10 @@
-
 using Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Models.Requests;
 
 namespace Controllers;
 
+[ApiController, Route("bookmarks")]
 public class BookmarkController : ControllerBase
 {
 
@@ -15,21 +15,21 @@ public class BookmarkController : ControllerBase
         _bookmarkService = bookmerkService;
     } 
 
-    [HttpPost("bookmarks/add")]
+    [HttpPost]
     public async Task<IActionResult> AddBookmark([FromBody] BaseRequest requestData)
     {
         await _bookmarkService.AddBookmarkAsync(requestData.Url ?? throw new Exception("Url is null or empty"));
         return Ok();
     }
 
-    [HttpDelete("bookmarks/remove")]
+    [HttpDelete]
     public async Task<IActionResult> RemoveBookmark([FromBody] BaseRequest requestData)
     {
         await _bookmarkService.DeleteBookmarkAsync(requestData.BookmarkId);
         return Ok();
     }
 
-    [HttpGet("bookmarks")]
+    [HttpGet]
     public async Task<IActionResult> GetBookmarkList([FromRoute] string bookmarkId)
     {
         var result = await _bookmarkService.GetBookmarkAsync(bookmarkId);
